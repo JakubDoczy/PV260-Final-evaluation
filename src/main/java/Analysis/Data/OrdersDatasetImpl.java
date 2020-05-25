@@ -17,12 +17,4 @@ public class OrdersDatasetImpl implements Dataset<Order> {
     public Iterator<Order> iterator() {
         return orders.iterator();
     }
-
-    public void forEach(Consumer<? super Order> action) {
-        orders.forEach(action);
-    }
-
-    public Spliterator<Order> spliterator() {
-        return orders.spliterator();
-    }
 }
