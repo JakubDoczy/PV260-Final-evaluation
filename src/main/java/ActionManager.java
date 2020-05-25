@@ -16,6 +16,11 @@ import org.slf4j.LoggerFactory;
  * The main idea is that multiple data analysis methods can be subscribed to
  * the same analyser which iterates through the data and gives it to methods.
  *
+ * Analyser calls methods in undefined order. It does not (have to) wait for the first
+ * method to finish. If we do not call any filtering methods, only one analyser
+ * is needed. Analyser is implemented this way so we can minimize number of
+ * operations on dataset.
+ *
  * FAQ:
  * Q: why not give dataset to method directly? A: We would have to iterate multiple
  * times through data - each method would iterate over data independently. By using
@@ -23,11 +28,11 @@ import org.slf4j.LoggerFactory;
  * for data.
  * Q: But what about parallelism? A: Analyser can still make it possible. Either by doing
  * multiple iterations, each in different thread and sending data in different threads to
- * analysers or it could divide the dataset and each thread would analyse one part. I
+ * methods or it could divide the dataset and each thread would analyse one part. I
  * haven't implemented these parallel analysers but I'm pretty sure it is possible.
  *
  * @param <T> Analysis.Data Data type
- * @param <A> Analysis.Analyser Analyser type
+ * @param <A> Analysis.Analyser Analyser type.
  */
 public class ActionManager <T, A extends Analyser<T, Dataset<T>>> {
 
