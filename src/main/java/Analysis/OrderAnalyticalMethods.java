@@ -5,7 +5,7 @@ import Analysis.Data.OrderStatus;
 
 import java.util.function.Supplier;
 
-public enum OrderAnalMethods {
+public enum OrderAnalyticalMethods {
 
     TOP_CUSTOMERS("top3", new Supplier<AnalyticalMethod<Order, OrderAnalyser>>() {
         @Override
@@ -35,7 +35,7 @@ public enum OrderAnalMethods {
     public String str;
     private Supplier<AnalyticalMethod<Order, OrderAnalyser>> supplier;
 
-    private OrderAnalMethods(String str, Supplier<AnalyticalMethod<Order, OrderAnalyser>> supplier) {
+    private OrderAnalyticalMethods(String str, Supplier<AnalyticalMethod<Order, OrderAnalyser>> supplier) {
         this.str = str;
         this.supplier = supplier;
     }

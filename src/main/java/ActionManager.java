@@ -75,7 +75,7 @@ public class ActionManager <T, A extends Analyser<T, Dataset<T>>> {
     /**
      * Adds data analysis method. Order of methods is important!
      *
-     * @param datasetFilter Analysis method.
+     * @param method Analysis method.
      */
     public void addAnalyticalMethod(AnalyticalMethod<T, A> method) {
         log.debug("Adding analytical method " + method.toString() + " to action manager.");
