@@ -1,4 +1,4 @@
-package Analysis;
+package Analysis.Methods;
 
 import Analysis.Data.Dataset;
 

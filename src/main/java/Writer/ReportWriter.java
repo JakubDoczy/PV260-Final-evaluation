@@ -2,7 +2,7 @@ package Writer;
 
 public interface ReportWriter {
 
-    void addReportable(Reportable reportable);
+    void addReportCreator(ReporterCreator reportCreator);
 
     void writeReport();
 }

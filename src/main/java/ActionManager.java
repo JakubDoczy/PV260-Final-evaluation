@@ -1,5 +1,5 @@
-import Analysis.Analyser;
-import Analysis.AnalyticalMethod;
+import Analysis.Methods.Analyser;
+import Analysis.Methods.AnalyticalMethod;
 import Analysis.Data.Dataset;
 import Analysis.DatasetFilter;
 import Writer.ReportWriter;
@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import Writer.ReportableAnalyticalMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * FAQ:
  * Q: why not give dataset to method directly? A: We would have to iterate multiple
  * times through data - each method would iterate over data independently. By using
- * Analysis.Analyser we can (partially) avoid this - AnalyticalMethods subscribe callbacks
+ * Analysis.Methods.Analyser we can (partially) avoid this - AnalyticalMethods subscribe callbacks
  * for data.
  * Q: But what about parallelism? A: Analyser can still make it possible. Either by doing
  * multiple iterations, each in different thread and sending data in different threads to
@@ -32,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * haven't implemented these parallel analysers but I'm pretty sure it is possible.
  *
  * @param <T> Analysis.Data Data type
- * @param <A> Analysis.Analyser Analyser type.
+ * @param <A> Analysis.Methods.Analyser Analyser type.
  */
 public class ActionManager <T, A extends Analyser<T, Dataset<T>>> {
 
@@ -49,7 +50,7 @@ public class ActionManager <T, A extends Analyser<T, Dataset<T>>> {
      * Created action manager that uses and changes dataset.
      *
      * @param dataset Analysis.Data for analysis.
-     * @param analyserSupplier Analysis.Analyser factory.
+     * @param analyserSupplier Analysis.Methods.Analyser factory.
      * @param reportWriter Writes report.
      */
     public ActionManager(Dataset<T> dataset, Supplier<A> analyserSupplier, ReportWriter reportWriter) {
@@ -82,7 +83,7 @@ public class ActionManager <T, A extends Analyser<T, Dataset<T>>> {
      *
      * @param method Analysis method.
      */
-    public void addAnalyticalMethod(AnalyticalMethod<T, A> method) {
+    public void addAnalyticalMethod(ReportableAnalyticalMethod<T, A> method) {
         log.debug("Adding analytical method " + method.toString() + " to action manager.");
 
         if (analyser == null) {
@@ -97,7 +98,7 @@ public class ActionManager <T, A extends Analyser<T, Dataset<T>>> {
 
         log.debug("Adding analytical method " + method.toString() + " to analyser " + analyser.toString());
         method.register(analyser);
-        reportWriter.addReportable(method);
+        reportWriter.addReportCreator(method);
     }
 
     /**

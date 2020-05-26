@@ -2,6 +2,7 @@ package Analysis;
 
 import Analysis.Data.Dataset;
 import Analysis.Data.Order;
+import Analysis.Methods.Analyser;
 
 import java.util.ArrayList;
 import java.util.Calendar;

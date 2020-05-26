@@ -1,25 +1,34 @@
-package Analysis;
+package Analysis.Methods;
 
 import Analysis.Data.Order;
 import Analysis.Data.OrderStatus;
-import ReportFormatter.DefaultMapReportCreator;
-import ReportFormatter.TableFormatter;
+import Analysis.OrderAnalyser;
+import Writer.ReportableAnalyticalMethod;
+import Writer.Reporter;
 
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.*;
 import java.util.function.BiConsumer;
 
 
-public class AvgOrderPrice implements AnalyticalMethod<Order, OrderAnalyser> {
+public class AvgOrderPrice implements ReportableAnalyticalMethod<Order, OrderAnalyser> {
 
     private OrderStatus desiredStatus;
     private Map<Long, Double> avgPrices;
     private Map<Long, Long> numberOfOrdersPA; // Total number of (relevant) orders for each year
     private TotalPrice totalPriceMethod;
     private Double maxAvgPrice;
+
+    public OrderStatus getDesiredStatus() {
+        return desiredStatus;
+    }
+
+    public Map<Long, Double> getAveragePrices() {
+        return avgPrices;
+    }
+
+    public Double getMaxAvgPrice() {
+        return maxAvgPrice;
+    }
 
     public AvgOrderPrice(OrderStatus desiredStatus) {
         this.desiredStatus = desiredStatus;
@@ -75,50 +84,13 @@ public class AvgOrderPrice implements AnalyticalMethod<Order, OrderAnalyser> {
     }
 
     @Override
-    public void reportTXT(OutputStream os) throws IOException {
+    public Reporter createReporter() {
         if (totalPriceMethod == null || numberOfOrdersPA == null) {
-            throw new IllegalStateException("Calling reportTXT before analysis.");
+            throw new IllegalStateException("Creating reporter before analysis.");
         }
         computeAverage();
 
-        String header = "Average " + desiredStatus.name() + " order prices" + System.lineSeparator();
-        String[] columns = {"Year", "Average order price"};
-
-        // assuming year is always <= 4 chars long
-        // average order price is log10 + 1 + decimal mark + 2 decimal points
-        int[] columnLengths = {4, (int) Math.log10(maxAvgPrice + 1) + 4};
-        if (columnLengths[1] < columns[1].length()) {
-            columnLengths[1] = columns[1].length();
-        }
-
-        DefaultMapReportCreator reportCreator = DefaultMapReportCreator.Builder.<Long, Double>newInstance()
-                .setData(avgPrices)
-                .setColumnNames(columns)
-                .setColumnLengths(columnLengths)
-                .setKeyFormatter(TableFormatter.FORMATTER_LONG)
-                .setValueFormatter(TableFormatter.FORMATTER_DOUBLE)
-                .build();
-
-        os.write(header.getBytes());
-        reportCreator.defaultMapReport(os);
-    }
-
-    @Override
-    public void reportXML(XMLStreamWriter writer) throws XMLStreamException {
-        if (totalPriceMethod == null || numberOfOrdersPA == null) {
-            throw new IllegalStateException("Calling reportXML before analysis.");
-        }
-        computeAverage();
-
-        writer.writeStartElement("average_" + desiredStatus.str + "_order_price");
-
-        for (Map.Entry<Long, Double> entry : avgPrices.entrySet()) {
-            writer.writeStartElement(entry.getKey().toString());
-            writer.writeCharacters(entry.getValue().toString());
-            writer.writeEndElement();
-        }
-
-        writer.writeEndElement();
+        return new AvgOrderPriceReporter(this);
     }
 
     @Override

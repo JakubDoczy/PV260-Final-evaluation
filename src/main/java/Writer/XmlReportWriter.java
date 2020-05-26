@@ -13,17 +13,17 @@ import static Writer.TxtReportWriter.CreateOutputStream;
 
 public class XmlReportWriter implements ReportWriter {
 
-    private List<Reportable> reportables;
+    private List<ReporterCreator> reportCreators;
     private String outputFilePath;
 
     public XmlReportWriter(String outputFilePath) {
-        reportables = new ArrayList<>();
+        reportCreators = new ArrayList<>();
         this.outputFilePath = outputFilePath;
     }
 
     @Override
-    public void addReportable(Reportable reportable) {
-        reportables.add(reportable);
+    public void addReportCreator(ReporterCreator reportCreator) {
+        reportCreators.add(reportCreator);
     }
 
     @Override
@@ -32,8 +32,8 @@ public class XmlReportWriter implements ReportWriter {
             XMLOutputFactory xmlof = XMLOutputFactory.newInstance();
             XMLStreamWriter writer = new IndentingXMLStreamWriter(xmlof.createXMLStreamWriter(os));
 
-            for (Reportable reportable : reportables) {
-                reportable.reportXML(writer);
+            for (ReporterCreator reportCreator : reportCreators) {
+                reportCreator.createReporter().reportXML(writer);
             }
         } catch (XMLStreamException | IOException e) {
             throw new RuntimeException("Failed to create XML report.", e);

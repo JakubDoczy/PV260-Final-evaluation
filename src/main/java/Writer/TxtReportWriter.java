@@ -6,8 +6,6 @@ import java.util.List;
 
 public class TxtReportWriter implements ReportWriter {
 
-
-
     static OutputStream CreateOutputStream(String filePath) {
         File file = new File(filePath);
 
@@ -24,24 +22,24 @@ public class TxtReportWriter implements ReportWriter {
         }
     }
 
-    private List<Reportable> reportables;
+    private List<ReporterCreator> reportCreators;
     private String outputFilePath;
 
     public TxtReportWriter(String outputFilePath) {
-        reportables = new ArrayList<>();
+        reportCreators = new ArrayList<>();
         this.outputFilePath = outputFilePath;
     }
 
     @Override
-    public void addReportable(Reportable reportable) {
-        reportables.add(reportable);
+    public void addReportCreator(ReporterCreator reportCreator) {
+        reportCreators.add(reportCreator);
     }
 
     @Override
     public void writeReport() {
         try (OutputStream os = CreateOutputStream(outputFilePath)) {
-            for (Reportable reportable : reportables) {
-                reportable.reportTXT(os);
+            for (ReporterCreator reportCreator : reportCreators) {
+                reportCreator.createReporter().reportTXT(os);
             }
         } catch (IOException e) {
             throw new RuntimeException("Failed to create text report.");
