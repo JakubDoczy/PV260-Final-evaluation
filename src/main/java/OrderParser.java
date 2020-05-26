@@ -55,7 +55,7 @@ public class OrderParser implements Parser<Order> {
                 throw new RuntimeException("Encountered invalid number of columns while parsing orders.");
             }
 
-            Order order = Order.Builder.newInstance().setId(Integer.parseInt(attributes[0]))
+            Order order = new Order.Builder(Integer.parseInt(attributes[0]))
                     .setOrderDate(parseDate(attributes[1]))
                     .setCustomerEmail(attributes[2])
                     .setCustomerAddress(attributes[3])

@@ -38,17 +38,9 @@ public class Order {
         private int totalPrice;
         private OrderStatus orderStatus;
 
-        private Builder() {}
-
-        public static Builder newInstance()
-        {
-            return new Builder();
-        }
-
-        public Builder setId(int id) {
+        public Builder(int id) {
             assert id != -1;
             this.id = id;
-            return this;
         }
 
         public Builder setOrderDate(Date orderDate) {
