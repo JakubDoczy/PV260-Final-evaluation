@@ -1,3 +1,5 @@
+package InputArguments;
+
 import Writer.ReportWriter;
 import Writer.TxtReportWriter;
 import Writer.XmlReportWriter;
@@ -6,18 +8,8 @@ import java.util.function.Function;
 
 public enum OutputType {
 
-    XML("xml", new Function<String, ReportWriter>() {
-        @Override
-        public ReportWriter apply(String path) {
-            return new XmlReportWriter(path);
-        }
-    }),
-    PLAIN("plain", new Function<String, ReportWriter>() {
-        @Override
-        public ReportWriter apply(String path) {
-            return new TxtReportWriter(path);
-        }
-    });
+    XML("xml", XmlReportWriter::new),
+    PLAIN("plain", TxtReportWriter::new);
 
     public String str;
     private Function<String, ReportWriter> reportWriterCreator;
