@@ -1,8 +1,9 @@
 import Analysis.Data.Order;
-import Analysis.OrderAnalMethods;
+import Analysis.OrderAnalyticalMethods;
 import Analysis.OrderAnalyser;
 import Analysis.OrderFilters;
 import Analysis.Data.OrdersDatasetImpl;
+import InputArguments.ProgramOptions;
 import Writer.ReportWriter;
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
@@ -11,11 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class DaTool {
 
@@ -25,12 +22,7 @@ public class DaTool {
     private static OrdersDatasetImpl parseOrdersDataset(String inputUrl) {
         OrdersDatasetImpl ordersDataset = new OrdersDatasetImpl();
         OrderParser orderParser = new OrderParser();
-        Consumer<Order> orderConsumer = new Consumer<Order>() {
-            @Override
-            public void accept(Order order) {
-                ordersDataset.add(order);
-            }
-        };
+        Consumer<Order> orderConsumer = ordersDataset::add;
 
         InputStream is;
         try {
@@ -38,7 +30,7 @@ public class DaTool {
         } catch (MalformedURLException e) {
             throw new RuntimeException("URL seems to be malformed (" + inputUrl + ").", e);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to open URL.");
+            throw new RuntimeException("Failed to open URL.", e);
         }
 
         try {
@@ -49,50 +41,6 @@ public class DaTool {
 
         return ordersDataset;
     }
-
-    // creates map of method names and registration actions
-    private static Map<String, Runnable> createRegistrationMap(ActionManager<Order, OrderAnalyser> actionManager) {
-        Map<String, Runnable> map = new HashMap<>();
-
-        for (OrderAnalMethods orderAnalMethod : OrderAnalMethods.values()) {
-            map.put(orderAnalMethod.str, new Runnable() {
-                @Override
-                public void run() {
-                    actionManager.addAnalyticalMethod(orderAnalMethod.create());
-                }
-            });
-        }
-
-        for (OrderFilters orderFilter : OrderFilters.values()) {
-            map.put(orderFilter.str, new Runnable() {
-                @Override
-                public void run() {
-                    actionManager.addFilterMethod(orderFilter.filter);
-                }
-            });
-        }
-
-        return map;
-    }
-
-    // parses data manipulation methods and registers them in actionManager
-    private static void registerOrderManipulationMethods(List<String> unparsedMethods, ActionManager<Order, OrderAnalyser> actionManager)  {
-        Map<String, Runnable> registrationMap = createRegistrationMap(actionManager);
-
-        for (String unparsedMethod : unparsedMethods) {
-            if (!registrationMap.containsKey(unparsedMethod)) {
-                throw new RuntimeException("Unrecognised data manipulation method.");
-            }
-            registrationMap.get(unparsedMethod).run();
-        }
-    }
-
-    private static Supplier<OrderAnalyser> orderAnalyserSupplier = new Supplier<OrderAnalyser>() {
-        @Override
-        public OrderAnalyser get() {
-            return new OrderAnalyser();
-        }
-    };
 
     public static void main(String[] args) {
         BasicConfigurator.configure();
@@ -116,8 +64,7 @@ public class DaTool {
         OrdersDatasetImpl dataset = parseOrdersDataset(options.getInputPath());
 
         log.debug("Creating action manager.");
-        ActionManager<Order, OrderAnalyser> orderActionManager = new ActionManager<>(dataset, orderAnalyserSupplier, reportWriter);
-        registerOrderManipulationMethods(options.getManipulationMethods(), orderActionManager);
+        ActionManager<Order, OrderAnalyser> orderActionManager = new OrderActionManager(dataset, options.getManipulationMethods(), reportWriter);
 
         log.debug("Starting data analysis.");
         orderActionManager.run();
