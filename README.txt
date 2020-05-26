@@ -1,5 +1,5 @@
-# PV260-Initial-evaluation
-Initial evaluation project
+# PV260-final-evaluation
+Final evaluation project
 
 Tool must be executed with parameters
 -d [DATASET_LOCATION_URL] -m [MANIPULATION_METHODS] -o [OUTPUT_TYPE] [OUTPUT_FILE]
