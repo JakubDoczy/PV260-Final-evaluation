@@ -24,7 +24,7 @@ public class TotalPriceReporter implements Reporter {
             throw new IllegalStateException("Calling reportTXT before analysis.");
         }
 
-        String header = "Total " + totalPrice.getDesiredStatus().name() + " order prices";
+        String header = "Total " + totalPrice.getDesiredStatus().name() + " order prices" + System.lineSeparator();
         String[] columns = {"Year", "Total order price"};
 
         int[] columnLengths = {4, (int) Math.log10(totalPrice.findMaxPrice() + 1) + 1};
