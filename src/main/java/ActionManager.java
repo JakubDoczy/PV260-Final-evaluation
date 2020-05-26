@@ -88,12 +88,7 @@ public class ActionManager <T, A extends Analyser<T, Dataset<T>>> {
 
         if (analyser == null) {
             analyser = analyserSupplier.get();
-            analysisActions.add(new Runnable() {
-                @Override
-                public void run() {
-                    analyser.analyse(dataset);
-                }
-            });
+            analysisActions.add(new AnalysisRunner(analyser, dataset));
         }
 
         log.debug("Adding analytical method " + method.toString() + " to analyser " + analyser.toString());
@@ -113,5 +108,22 @@ public class ActionManager <T, A extends Analyser<T, Dataset<T>>> {
         log.debug("Analysis complete.");
         log.debug("Writing report.");
         reportWriter.writeReport();
+    }
+
+    // ad hoc class to run analyser
+    // needed because supplier itself would point to wrong analyser
+    private class AnalysisRunner implements Runnable {
+        A analyser;
+        Dataset<T> dataset;
+
+        private AnalysisRunner(A analyser, Dataset<T> dataset) {
+            this.analyser = analyser;
+            this.dataset = dataset;
+        }
+
+        @Override
+        public void run() {
+            analyser.analyse(dataset);
+        }
     }
 }
