@@ -1,4 +1,5 @@
-import jdk.internal.util.xml.impl.Input;
+package InputArguments;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +48,7 @@ public class ProgramOptions {
     public ProgramOptions(String[] commandLineArgs) {
         manipulationMethods = new ArrayList<>();
         new ProgramOptionsParser(commandLineArgs);
-        log.debug("Successfully parsed all arguments.");
+        log.info("Successfully parsed all arguments.");
     }
 
     private class ProgramOptionsParser {
